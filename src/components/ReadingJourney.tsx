@@ -3,7 +3,7 @@ import { BookOpen, Award, Medal, Star, Target, PlusCircle, X, Book, GraduationCa
 import { useApp } from '../context/AppContext';
 
 export default function ReadingJourney() {
-  const { readingSessions, setReadingSessions } = useApp();
+  const { readingSessions, setReadingSessions, readingConfig } = useApp();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   
@@ -13,7 +13,8 @@ export default function ReadingJourney() {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [duration, setDuration] = useState<number>(30);
 
-  const maxSessions = 78;
+  // Compute maxSessions dynamically from academic config
+  const maxSessions = readingConfig.weeksPerYear * readingConfig.sessionsPerWeek * readingConfig.dailyPeriods;
   const sessionsCount = readingSessions.length;
   
   const homeworkCount = readingSessions.filter(s => s.type === 'homework').length;
@@ -184,7 +185,21 @@ export default function ReadingJourney() {
         <p className="text-slate-300 max-w-md z-10">
           حصيلة مثمرة! لقد أتممت {sessionsCount} حصة مطالعة من أصل {maxSessions} حصة مبرمجة في الموسم.
         </p>
-        
+        {/* Academic config summary badges */}
+        <div className="flex flex-wrap justify-center gap-2 mt-3 z-10">
+          <span className="text-[11px] bg-slate-700/60 text-slate-300 border border-white/10 px-3 py-1 rounded-full">
+            📅 {readingConfig.weeksPerYear} أسبوعاً
+          </span>
+          <span className="text-[11px] bg-slate-700/60 text-slate-300 border border-white/10 px-3 py-1 rounded-full">
+            📚 {readingConfig.sessionsPerWeek} حصص/أسبوع
+          </span>
+          <span className="text-[11px] bg-slate-700/60 text-slate-300 border border-white/10 px-3 py-1 rounded-full">
+            🕐 {readingConfig.dailyPeriods} فترة/يوم
+          </span>
+          <span className="text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full font-bold">
+            المجموع: {maxSessions} حصة
+          </span>
+        </div>
         <button 
           onClick={() => { resetForm(); setIsModalOpen(true); }}
           className="mt-6 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-colors shadow-sm z-10"

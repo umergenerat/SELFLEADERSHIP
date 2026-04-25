@@ -45,6 +45,19 @@ export interface UserPreferences {
   notifications: boolean;
 }
 
+// Reading quota configuration (academic year / term)
+export interface ReadingConfig {
+  weeksPerYear: number;      // e.g. 34
+  sessionsPerWeek: number;   // 5 or 6
+  dailyPeriods: number;      // 1 or 2 (morning / afternoon)
+}
+
+// Login credentials (stored in localStorage)
+export interface UserCredentials {
+  username: string;
+  password: string;
+}
+
 export interface Contact {
   id: string;
   name: string;
@@ -76,6 +89,8 @@ interface AppContextType {
   readingSessions: ReadingSession[];
   difficulties: Difficulty[];
   grades: GradeEntry[];
+  readingConfig: ReadingConfig;
+  credentials: UserCredentials;
   setProfile: React.Dispatch<React.SetStateAction<UserProfile>>;
   setPreferences: React.Dispatch<React.SetStateAction<UserPreferences>>;
   setSubjects: React.Dispatch<React.SetStateAction<string[]>>;
@@ -85,6 +100,8 @@ interface AppContextType {
   setPeers: React.Dispatch<React.SetStateAction<Peer[]>>;
   setTeachers: React.Dispatch<React.SetStateAction<Teacher[]>>;
   setGrades: React.Dispatch<React.SetStateAction<GradeEntry[]>>;
+  setReadingConfig: React.Dispatch<React.SetStateAction<ReadingConfig>>;
+  setCredentials: React.Dispatch<React.SetStateAction<UserCredentials>>;
   toggleHealthAlert: () => void;
 }
 
@@ -136,6 +153,17 @@ const defaultPreferences: UserPreferences = {
   language: "ar",
   theme: "frosted",
   notifications: true
+};
+
+const defaultReadingConfig: ReadingConfig = {
+  weeksPerYear: 34,
+  sessionsPerWeek: 5,
+  dailyPeriods: 2
+};
+
+const defaultCredentials: UserCredentials = {
+  username: 'admin',
+  password: '1234'
 };
 
 const defaultReadingSessions: ReadingSession[] = [
@@ -193,12 +221,14 @@ export const AppProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [peers, setPeers] = useState<Peer[]>(savedData?.peers || defaultPeers);
   const [teachers, setTeachers] = useState<Teacher[]>(savedData?.teachers || defaultTeachers);
   const [grades, setGrades] = useState<GradeEntry[]>(savedData?.grades || defaultGrades);
+  const [readingConfig, setReadingConfig] = useState<ReadingConfig>(savedData?.readingConfig || defaultReadingConfig);
+  const [credentials, setCredentials] = useState<UserCredentials>(savedData?.credentials || defaultCredentials);
 
   React.useEffect(() => {
     localStorage.setItem('self_leadership_data', JSON.stringify({
-      profile, preferences, subjects, schedule, readingSessions, difficulties, peers, teachers, grades
+      profile, preferences, subjects, schedule, readingSessions, difficulties, peers, teachers, grades, readingConfig, credentials
     }));
-  }, [profile, preferences, subjects, schedule, readingSessions, difficulties, peers, teachers, grades]);
+  }, [profile, preferences, subjects, schedule, readingSessions, difficulties, peers, teachers, grades, readingConfig, credentials]);
 
   const toggleHealthAlert = () => {
     setProfile(prev => ({ ...prev, healthAlertActive: !prev.healthAlertActive }));
@@ -206,8 +236,8 @@ export const AppProvider: React.FC<{children: ReactNode}> = ({ children }) => {
 
   return (
     <AppContext.Provider value={{
-      profile, preferences, subjects, schedule, peers, teachers, readingSessions, difficulties, grades,
-      setProfile, setPreferences, setSubjects, setSchedule, setReadingSessions, setDifficulties, setPeers, setTeachers, setGrades, toggleHealthAlert
+      profile, preferences, subjects, schedule, peers, teachers, readingSessions, difficulties, grades, readingConfig, credentials,
+      setProfile, setPreferences, setSubjects, setSchedule, setReadingSessions, setDifficulties, setPeers, setTeachers, setGrades, setReadingConfig, setCredentials, toggleHealthAlert
     }}>
       {children}
     </AppContext.Provider>

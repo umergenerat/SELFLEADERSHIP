@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, User, Globe, Layout, Save, Book, Plus, X, Calendar as CalendarIcon, Users, GraduationCap } from 'lucide-react';
-import { useApp, Peer, Teacher } from '../context/AppContext';
+import { Settings as SettingsIcon, User, Globe, Layout, Save, Book, Plus, X, Calendar as CalendarIcon, Users, GraduationCap, BookOpen, ShieldCheck, Eye, EyeOff, AlertCircle, CheckCircle2, Lock } from 'lucide-react';
+import { useApp, Peer, Teacher, ReadingConfig, UserCredentials } from '../context/AppContext';
 
 export default function Settings() {
-  const { profile: globalProfile, preferences: globalPreferences, subjects: globalSubjects, peers: globalPeers, teachers: globalTeachers, setProfile, setPreferences, setSubjects, setPeers, setTeachers } = useApp();
+  const { profile: globalProfile, preferences: globalPreferences, subjects: globalSubjects, peers: globalPeers, teachers: globalTeachers, readingConfig: globalReadingConfig, credentials: globalCredentials, setProfile, setPreferences, setSubjects, setPeers, setTeachers, setReadingConfig, setCredentials } = useApp();
 
   const [profile, setProfileState] = useState(globalProfile);
   const [preferences, setPreferencesState] = useState(globalPreferences);
@@ -31,6 +31,21 @@ export default function Settings() {
   
   const { schedule: globalSchedule, setSchedule } = useApp();
   const [schedule, setScheduleState] = useState(globalSchedule);
+
+  const [readingConfig, setReadingConfigState] = useState<ReadingConfig>(globalReadingConfig);
+
+  // Derived max sessions
+  const computedMax = readingConfig.weeksPerYear * readingConfig.sessionsPerWeek * readingConfig.dailyPeriods;
+
+  // --- Credentials / Security ---
+  const [newUsername, setNewUsername] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPwd, setShowCurrentPwd] = useState(false);
+  const [showNewPwd, setShowNewPwd] = useState(false);
+  const [showConfirmPwd, setShowConfirmPwd] = useState(false);
+  const [credMsg, setCredMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const [isSaved, setIsSaved] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -69,8 +84,36 @@ export default function Settings() {
     setSchedule(schedule);
     setPeers(peers);
     setTeachers(teachers);
+    setReadingConfig(readingConfig);
     setIsSaved(true);
     setShowConfirm(false);
+  };
+
+  const handleCredentialsSave = () => {
+    setCredMsg(null);
+    if (currentPassword !== globalCredentials.password) {
+      setCredMsg({ type: 'error', text: 'كلمة المرور الحالية غير صحيحة.' });
+      return;
+    }
+    const updatedUsername = newUsername.trim() || globalCredentials.username;
+    if (newPassword && newPassword !== confirmPassword) {
+      setCredMsg({ type: 'error', text: 'كلمة المرور الجديدة وتأكيدها غير متطابقتين.' });
+      return;
+    }
+    if (newPassword && newPassword.length < 4) {
+      setCredMsg({ type: 'error', text: 'يجب أن تتكوّن كلمة المرور من 4 أحرف على الأقل.' });
+      return;
+    }
+    setCredentials({
+      username: updatedUsername,
+      password: newPassword || globalCredentials.password
+    });
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setNewUsername('');
+    setCredMsg({ type: 'success', text: 'تم تحديث بيانات الاعتماد بنجاح.' });
+    setTimeout(() => setCredMsg(null), 4000);
   };
 
   const handleSave = () => {
@@ -584,6 +627,259 @@ export default function Settings() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* ===== Security / Credentials Section ===== */}
+        <div className="mt-8 border-t border-white/10 pt-8">
+          <div className="flex items-center gap-3 border-b border-white/10 pb-2 mb-6">
+            <ShieldCheck className="text-blue-400" size={20} />
+            <h3 className="text-xl font-semibold text-white">الأمان وبيانات الاعتماد</h3>
+          </div>
+
+          {/* Current credentials display */}
+          <div className="mb-6 flex items-center gap-4 bg-blue-500/8 border border-blue-500/20 rounded-2xl p-4">
+            <div className="bg-blue-500/20 p-3 rounded-xl text-blue-400 shrink-0">
+              <ShieldCheck size={22} />
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 mb-0.5">اسم المستخدم الحالي</p>
+              <p className="text-white font-bold text-base">{globalCredentials.username}</p>
+            </div>
+            <div className="mr-auto text-right">
+              <p className="text-xs text-slate-500 mb-0.5">كلمة المرور</p>
+              <p className="text-slate-400 text-sm tracking-widest">{'•'.repeat(globalCredentials.password.length)}</p>
+            </div>
+          </div>
+
+          {/* Feedback message */}
+          {credMsg && (
+            <div
+              className={`flex items-center gap-3 rounded-xl px-4 py-3 mb-5 text-sm font-medium border ${
+                credMsg.type === 'success'
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                  : 'bg-red-500/10 border-red-500/30 text-red-300'
+              }`}
+              style={{ animation: 'fade-in-up 0.3s ease-out' }}
+            >
+              {credMsg.type === 'success'
+                ? <CheckCircle2 size={18} className="text-emerald-400 shrink-0" />
+                : <AlertCircle size={18} className="text-red-400 shrink-0" />}
+              {credMsg.text}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            {/* Left column: username */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold text-slate-300 flex items-center gap-2">
+                <User size={15} className="text-slate-400" />
+                تغيير اسم المستخدم
+              </h4>
+
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">اسم المستخدم الجديد</label>
+                <input
+                  type="text"
+                  value={newUsername}
+                  onChange={e => setNewUsername(e.target.value)}
+                  placeholder={globalCredentials.username}
+                  className="w-full bg-slate-900/50 border border-white/10 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder:text-slate-600"
+                />
+                <p className="text-[11px] text-slate-600 mt-1">اتركه فارغاً للإبقاء على الاسم الحالي</p>
+              </div>
+            </div>
+
+            {/* Right column: password */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold text-slate-300 flex items-center gap-2">
+                <Lock size={15} className="text-slate-400" />
+                تغيير كلمة المرور
+              </h4>
+
+              {/* New password */}
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">كلمة المرور الجديدة</label>
+                <div className="relative">
+                  <input
+                    type={showNewPwd ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    placeholder="أدخل كلمة مرور جديدة (4 أحرف على الأقل)"
+                    className="w-full bg-slate-900/50 border border-white/10 text-white rounded-xl px-4 py-2.5 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder:text-slate-600"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPwd(!showNewPwd)}
+                    className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
+                  >
+                    {showNewPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm password */}
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">تأكيد كلمة المرور الجديدة</label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPwd ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    placeholder="أعد كتابة كلمة المرور"
+                    className={`w-full bg-slate-900/50 border text-white rounded-xl px-4 py-2.5 pl-10 text-sm focus:outline-none focus:ring-2 transition-all placeholder:text-slate-600 ${
+                      confirmPassword && confirmPassword !== newPassword
+                        ? 'border-red-500/50 focus:ring-red-500'
+                        : confirmPassword && confirmPassword === newPassword && newPassword
+                        ? 'border-emerald-500/50 focus:ring-emerald-500'
+                        : 'border-white/10 focus:ring-blue-500'
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPwd(!showConfirmPwd)}
+                    className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
+                  >
+                    {showConfirmPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                  {confirmPassword && confirmPassword === newPassword && newPassword && (
+                    <CheckCircle2 size={14} className="absolute left-9 top-1/2 -translate-y-1/2 text-emerald-400" />
+                  )}
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-600">اتركهما فارغتين للإبقاء على كلمة المرور الحالية</p>
+            </div>
+          </div>
+
+          {/* Current password confirmation — always required */}
+          <div className="mt-5 p-5 bg-amber-500/5 border border-amber-500/20 rounded-2xl">
+            <label className="block text-sm font-semibold text-amber-300 mb-2 flex items-center gap-2">
+              <Lock size={15} />
+              كلمة المرور الحالية (مطلوبة للتأكيد)
+            </label>
+            <div className="relative max-w-sm">
+              <input
+                type={showCurrentPwd ? 'text' : 'password'}
+                value={currentPassword}
+                onChange={e => setCurrentPassword(e.target.value)}
+                placeholder="أدخل كلمة مرورك الحالية للمتابعة"
+                className="w-full bg-slate-900/50 border border-amber-500/30 text-white rounded-xl px-4 py-2.5 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all placeholder:text-slate-600"
+              />
+              <button
+                type="button"
+                onClick={() => setShowCurrentPwd(!showCurrentPwd)}
+                className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
+              >
+                {showCurrentPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-5 flex justify-end">
+            <button
+              onClick={handleCredentialsSave}
+              disabled={!currentPassword}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-blue-500/20 disabled:cursor-not-allowed"
+            >
+              <ShieldCheck size={18} />
+              حفظ بيانات الاعتماد
+            </button>
+          </div>
+        </div>
+
+        {/* Reading Config Section */}
+        <div className="mt-8 border-t border-white/10 pt-8">
+          <div className="flex items-center gap-3 border-b border-white/10 pb-2 mb-6">
+            <BookOpen className="text-emerald-400" size={20} />
+            <h3 className="text-xl font-semibold text-white">ضبط رزنامة حصص المطالعة</h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Weeks per year */}
+            <div className="bg-white/5 border border-white/8 rounded-2xl p-5">
+              <p className="text-sm font-medium text-slate-300 mb-1">عدد أسابيع الموسم الدراسي</p>
+              <p className="text-xs text-slate-500 mb-4">الافتراضي: 34 أسبوعاً</p>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setReadingConfigState(c => ({ ...c, weeksPerYear: Math.max(1, c.weeksPerYear - 1) }))}
+                  className="w-9 h-9 rounded-lg bg-slate-700 hover:bg-slate-600 text-white font-bold text-lg flex items-center justify-center transition-colors"
+                >−</button>
+                <span className="text-3xl font-black text-emerald-400 min-w-[3rem] text-center">
+                  {readingConfig.weeksPerYear}
+                </span>
+                <button
+                  onClick={() => setReadingConfigState(c => ({ ...c, weeksPerYear: Math.min(52, c.weeksPerYear + 1) }))}
+                  className="w-9 h-9 rounded-lg bg-slate-700 hover:bg-slate-600 text-white font-bold text-lg flex items-center justify-center transition-colors"
+                >+</button>
+              </div>
+              <p className="text-xs text-slate-500 mt-3">النطاق: 1 – 52 أسبوعاً</p>
+            </div>
+
+            {/* Sessions per week */}
+            <div className="bg-white/5 border border-white/8 rounded-2xl p-5">
+              <p className="text-sm font-medium text-slate-300 mb-1">حصص المطالعة في الأسبوع</p>
+              <p className="text-xs text-slate-500 mb-4">اختر 5 أو 6 حصص</p>
+              <div className="flex gap-2">
+                {[5, 6].map(n => (
+                  <button
+                    key={n}
+                    onClick={() => setReadingConfigState(c => ({ ...c, sessionsPerWeek: n }))}
+                    className={`flex-1 py-3 rounded-xl font-black text-xl transition-all ${
+                      readingConfig.sessionsPerWeek === n
+                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                    }`}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-slate-500 mt-3">حصة × أسبوع</p>
+            </div>
+
+            {/* Daily periods */}
+            <div className="bg-white/5 border border-white/8 rounded-2xl p-5">
+              <p className="text-sm font-medium text-slate-300 mb-1">الفترات اليومية</p>
+              <p className="text-xs text-slate-500 mb-4">صباحي / مسائي أو كليهما</p>
+              <div className="flex gap-2">
+                {[1, 2].map(n => (
+                  <button
+                    key={n}
+                    onClick={() => setReadingConfigState(c => ({ ...c, dailyPeriods: n }))}
+                    className={`flex-1 py-3 rounded-xl font-black text-lg transition-all ${
+                      readingConfig.dailyPeriods === n
+                        ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
+                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                    }`}
+                  >
+                    {n === 1 ? 'فترة واحدة' : 'فترتان'}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-slate-500 mt-3">فترة في اليوم</p>
+            </div>
+          </div>
+
+          {/* Live preview */}
+          <div className="mt-5 bg-emerald-500/8 border border-emerald-500/20 rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-sm text-slate-400">معادلة الحساب</p>
+              <p className="text-base font-bold text-white mt-1">
+                {readingConfig.weeksPerYear} أسبوع
+                <span className="text-slate-400 mx-2">×</span>
+                {readingConfig.sessionsPerWeek} حصص/أسبوع
+                <span className="text-slate-400 mx-2">×</span>
+                {readingConfig.dailyPeriods} فترة/يوم
+                <span className="text-slate-400 mx-2">=</span>
+                <span className="text-emerald-400 font-black text-xl">{computedMax}</span>
+                <span className="text-slate-400 mr-1 text-base"> حصة مطالعة</span>
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs text-slate-500 mb-1">إجمالي الحصص المقررة</p>
+              <p className="text-4xl font-black text-emerald-400" style={{ textShadow: '0 0 20px rgba(16,185,129,0.4)' }}>{computedMax}</p>
+            </div>
           </div>
         </div>
 
