@@ -226,3 +226,15 @@ body {
   #pdf-content-area { padding: 0 !important; width: 100% !important; margin: 0 !important; }
   .glass, .alert-glass, .stat-card { background: none; border: 1px solid #ccc; color: black; }
 }
+
+/* ========== Light Mode ========== */
+html.theme-light {
+  filter: invert(1) hue-rotate(180deg);
+  background-color: white;
+}
+
+html.theme-light img,
+html.theme-light video,
+html.theme-light .avatar-no-invert {
+  filter: invert(1) hue-rotate(180deg);
+}

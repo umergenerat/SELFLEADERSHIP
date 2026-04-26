@@ -28,8 +28,18 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { profile: student, toggleHealthAlert, credentials } = useApp();
+  const { profile: student, toggleHealthAlert, credentials, preferences } = useApp();
   const healthAlert = student.healthAlertActive;
+
+  React.useEffect(() => {
+    if (preferences.theme === 'light') {
+      document.documentElement.classList.add('theme-light');
+    } else {
+      document.documentElement.classList.remove('theme-light');
+    }
+    document.documentElement.dir = preferences.language === 'ar' ? 'rtl' : 'ltr';
+  }, [preferences.theme, preferences.language]);
+
 
   if (!isAuthenticated) {
     return <Login credentials={credentials} onLogin={() => setIsAuthenticated(true)} />;
@@ -41,7 +51,7 @@ export default function App() {
     difficulties: <DifficultiesLab />,
     reading: <ReadingJourney />,
     progress: <ProgressCurve />,
-    settings: <Settings />
+    settings: <Settings onClose={() => setCurrentView('dashboard')} />
   };
 
   const navItems = [
@@ -60,7 +70,7 @@ export default function App() {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
-    <div className="flex h-screen w-full p-2 md:p-4 lg:p-6 gap-2 md:gap-4 lg:gap-6 text-white font-sans overflow-hidden" dir="rtl">
+    <div className="flex h-screen w-full p-2 md:p-4 lg:p-6 gap-2 md:gap-4 lg:gap-6 text-white font-sans overflow-hidden" dir={preferences.language === 'ar' ? 'rtl' : 'ltr'}>
       
       {/* Mobile Overlay */}
       {isSidebarOpen && (
@@ -86,7 +96,7 @@ export default function App() {
           </button>
           {/* Avatar */}
           <div
-            className="w-20 h-20 rounded-full p-[2px] relative"
+            className="w-20 h-20 rounded-full p-[2px] relative avatar-no-invert"
             style={{ background: 'linear-gradient(135deg, #10b981, #0d9488, #10b981)', boxShadow: '0 0 25px rgba(16,185,129,0.35)' }}
           >
             <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center relative overflow-hidden">

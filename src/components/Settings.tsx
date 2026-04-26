@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Settings as SettingsIcon, User, Globe, Layout, Save, Book, Plus, X, Calendar as CalendarIcon, Users, GraduationCap, BookOpen, ShieldCheck, Eye, EyeOff, AlertCircle, CheckCircle2, Lock } from 'lucide-react';
 import { useApp, Peer, Teacher, ReadingConfig, UserCredentials } from '../context/AppContext';
 
-export default function Settings() {
+export default function Settings({ onClose }: { onClose?: () => void }) {
   const { profile: globalProfile, preferences: globalPreferences, subjects: globalSubjects, peers: globalPeers, teachers: globalTeachers, readingConfig: globalReadingConfig, credentials: globalCredentials, setProfile, setPreferences, setSubjects, setPeers, setTeachers, setReadingConfig, setCredentials } = useApp();
 
   const [profile, setProfileState] = useState(globalProfile);
@@ -87,6 +87,11 @@ export default function Settings() {
     setReadingConfig(readingConfig);
     setIsSaved(true);
     setShowConfirm(false);
+    if (onClose) {
+      setTimeout(() => {
+        onClose();
+      }, 1500);
+    }
   };
 
   const handleCredentialsSave = () => {
@@ -258,7 +263,8 @@ export default function Settings() {
                    onChange={handlePreferencesChange}
                    className="w-full bg-slate-900/50 border border-white/10 text-white rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                  >
-                   <option value="frosted" className="bg-slate-900">الزجاجي الداكن (طابع مسار الريادة)</option>
+                   <option value="frosted" className="bg-slate-900">الوضع الليلي (الزجاجي)</option>
+                   <option value="light" className="bg-slate-900">الوضع النهاري</option>
                  </select>
               </div>
 
