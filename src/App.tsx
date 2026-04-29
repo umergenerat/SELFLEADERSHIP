@@ -173,8 +173,8 @@ export default function App() {
               <Menu size={24} />
             </button>
             <div className="flex flex-col">
-              <h1 className="text-lg md:text-xl font-black text-white tracking-tight">مسار الريادة الذكي</h1>
-              <p className="text-[10px] md:text-xs text-emerald-500/70 font-medium">دفتر القيادة والتتبع التربوي</p>
+              <h1 className="text-lg md:text-xl font-black text-white tracking-tight">RAED</h1>
+              <p className="text-[10px] md:text-xs text-emerald-500/70 font-medium">Reading · Achieving · Evaluating · Developing</p>
             </div>
           </div>
 

@@ -14,9 +14,9 @@ export default defineConfig(({mode}) => {
         registerType: 'autoUpdate',
         includeAssets: ['icon.svg'],
         manifest: {
-          name: 'مسار الريادة الذكي',
-          short_name: 'مسار الريادة',
-          description: 'تطبيق مسار الريادة الذكي للتعلم الذاتي وتطوير المهارات',
+          name: 'RAED - Reading · Achieving · Evaluating · Developing',
+          short_name: 'RAED',
+          description: 'RAED: منصة ذكية للقيادة الذاتية تقوم على أركان المطالعة والإنجاز والتقويم والتطوير',
           theme_color: '#4f46e5',
           background_color: '#ffffff',
           display: 'standalone',

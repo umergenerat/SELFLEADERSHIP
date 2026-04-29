@@ -86,11 +86,14 @@ export default function Login({ onLogin, credentials }: LoginProps) {
               </div>
             </div>
 
-            <h1 className="text-3xl font-black text-white tracking-tight leading-tight">
-              مسار الريادة الذكي
+            <h1 className="text-4xl font-black tracking-widest leading-tight" style={{ background: 'linear-gradient(135deg, #10b981, #34d399, #6ee7b7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              RAED
             </h1>
-            <p className="text-sm text-slate-400 mt-2 font-medium">
-              دفتر القيادة والتتبع التربوي
+            <p className="text-xs text-emerald-400/70 mt-1 font-semibold tracking-widest uppercase">
+              Reading · Achieving · Evaluating · Developing
+            </p>
+            <p className="text-xs text-slate-500 mt-1">
+              المطالعة · الإنجاز · التقويم · التطوير
             </p>
 
             {/* Decorative separator */}
