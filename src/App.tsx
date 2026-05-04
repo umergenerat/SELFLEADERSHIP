@@ -11,18 +11,24 @@ import {
   Menu,
   X,
   LogOut,
-  Sparkles
+  Sparkles,
+  Gamepad2,
+  Info,
+  Compass
 } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import Schedule from './components/Schedule';
 import DifficultiesLab from './components/DifficultiesLab';
 import ReadingJourney from './components/ReadingJourney';
 import ProgressCurve from './components/ProgressCurve';
+import InteractiveResources from './components/InteractiveResources';
+import Guidance from './components/Guidance';
+import UserGuide from './components/UserGuide';
 import Settings from './components/Settings';
 import Login from './components/Login';
 import { useApp } from './context/AppContext';
 
-type View = 'dashboard' | 'schedule' | 'difficulties' | 'reading' | 'progress' | 'settings';
+type View = 'dashboard' | 'schedule' | 'difficulties' | 'reading' | 'progress' | 'resources' | 'orientation' | 'guide' | 'settings';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -51,6 +57,9 @@ export default function App() {
     difficulties: <DifficultiesLab />,
     reading: <ReadingJourney />,
     progress: <ProgressCurve />,
+    resources: <InteractiveResources />,
+    orientation: <Guidance />,
+    guide: <UserGuide />,
     settings: <Settings onClose={() => setCurrentView('dashboard')} />
   };
 
@@ -58,8 +67,11 @@ export default function App() {
     { id: 'dashboard', label: 'لوحة القيادة', icon: LayoutDashboard },
     { id: 'schedule', label: 'البرنامج والمواظبة', icon: CalendarDays },
     { id: 'difficulties', label: 'مختبر الصعوبات', icon: Lightbulb },
+    { id: 'resources', label: 'المصادر التفاعلية', icon: Gamepad2 },
+    { id: 'orientation', label: 'التوجيه التربوي', icon: Compass },
     { id: 'reading', label: 'رحلة المطالعة', icon: BookOpen },
     { id: 'progress', label: 'منحنى التطور', icon: TrendingUp },
+    { id: 'guide', label: 'دليل الاستخدام', icon: Info },
     { id: 'settings', label: 'الإعدادات', icon: SettingsIcon },
   ];
 
