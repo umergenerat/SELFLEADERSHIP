@@ -226,6 +226,7 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
                    onChange={handleProfileChange}
                    className="w-full bg-red-900/20 border border-red-500/30 text-white rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all placeholder:text-red-300/50"
                    placeholder="مثال: حساسية، ربو..."
+                 />
                </div>
               <div>
                  <label className="block text-sm font-medium text-slate-300 mb-1 flex items-center gap-2">
