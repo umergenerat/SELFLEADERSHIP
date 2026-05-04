@@ -37,6 +37,7 @@ export interface UserProfile {
   id: string;
   healthAlert: string;
   healthAlertActive: boolean;
+  counselorPhone?: string;
 }
 
 export interface UserPreferences {
@@ -146,7 +147,8 @@ const defaultProfile: UserProfile = {
   school: "ثانوية المختار السوسي الإعدادية",
   id: "J123456789",
   healthAlert: "حساسية من مادة الغلوتين",
-  healthAlertActive: false
+  healthAlertActive: false,
+  counselorPhone: "212600000000"
 };
 
 const defaultPreferences: UserPreferences = {

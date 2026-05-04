@@ -14,8 +14,10 @@ import {
   MessageCircle,
   Send,
   XCircle,
-  Lightbulb
+  Lightbulb,
+  AlertCircle
 } from 'lucide-react';
+import { useApp } from '../context/AppContext';
 
 // Simplified scientific criteria based on RIASEC & Multiple Intelligences models
 const QUESTIONS = [
@@ -72,18 +74,42 @@ const PROFILES: Record<string, any> = {
 };
 
 const Guidance = () => {
+  const { profile } = useApp();
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [result, setResult] = useState<string | null>(null);
   const [showContactForm, setShowContactForm] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
+  const [contactError, setContactError] = useState<string | null>(null);
+  const [msgSubject, setMsgSubject] = useState('');
+  const [msgBody, setMsgBody] = useState('');
+
+  React.useEffect(() => {
+    if (result) {
+      setMsgSubject(`طلب استشارة حول توجيه: ${PROFILES[result].title}`);
+    }
+  }, [result]);
 
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setContactError(null);
+
+    if (!profile.counselorPhone) {
+      setContactError("يرجى إدراج رقم هاتف مستشار التوجيه في صفحة الإعدادات أولاً.");
+      return;
+    }
+
+    const fullMessage = `${msgSubject}\n\n${msgBody}`;
+    const encodedMessage = encodeURIComponent(fullMessage);
+    const whatsappUrl = `https://wa.me/${profile.counselorPhone.replace(/\+/g, '')}?text=${encodedMessage}`;
+    
+    window.open(whatsappUrl, '_blank');
+
     setMessageSent(true);
     setTimeout(() => {
       setShowContactForm(false);
       setMessageSent(false);
+      setMsgBody('');
     }, 3000);
   };
 
@@ -258,16 +284,23 @@ const Guidance = () => {
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/20 mb-4">
                       <CheckCircle2 className="text-emerald-400 w-8 h-8" />
                     </div>
-                    <h4 className="text-xl font-bold text-white mb-2">تم الإرسال بنجاح!</h4>
-                    <p className="text-slate-400">سيتواصل معك المستشار في أقرب وقت لتحديد موعد لجلسة التوجيه.</p>
+                    <h4 className="text-xl font-bold text-white mb-2">جاري توجيهك إلى الواتساب!</h4>
+                    <p className="text-slate-400">سيتم فتح المحادثة المباشرة مع مستشار التوجيه الآن.</p>
                   </div>
                 ) : (
                   <form onSubmit={handleContactSubmit} className="p-6 space-y-4 text-right">
+                    {contactError && (
+                      <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl text-sm flex items-start gap-2">
+                        <AlertCircle size={18} className="shrink-0 mt-0.5" />
+                        <p>{contactError}</p>
+                      </div>
+                    )}
                     <div>
                       <label className="block text-sm font-medium text-slate-300 mb-2">موضوع المراسلة</label>
                       <input 
                         type="text" 
-                        defaultValue={`طلب استشارة حول توجيه: ${PROFILES[result].title}`}
+                        value={msgSubject}
+                        onChange={(e) => setMsgSubject(e.target.value)}
                         className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors"
                         required
                       />
@@ -276,6 +309,8 @@ const Guidance = () => {
                       <label className="block text-sm font-medium text-slate-300 mb-2">رسالتك (اختياري)</label>
                       <textarea 
                         rows={4}
+                        value={msgBody}
+                        onChange={(e) => setMsgBody(e.target.value)}
                         placeholder="اكتب هنا أي تفاصيل إضافية أو أسئلة تود طرحها على المستشار..."
                         className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors resize-none"
                       />
@@ -285,7 +320,7 @@ const Guidance = () => {
                       className="w-full py-3 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
                     >
                       <Send size={18} />
-                      <span>إرسال الطلب</span>
+                      <span>إرسال عبر الواتساب</span>
                     </button>
                   </form>
                 )}
