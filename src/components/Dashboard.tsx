@@ -255,7 +255,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ── KPI Cards ── */
+      {/* ── KPI Cards ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
 
         {/* Attendance */}
