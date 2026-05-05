@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 import { 
   LayoutDashboard, 
   CalendarDays, 
@@ -66,7 +67,7 @@ export default function App() {
   const navItems = [
     { id: 'dashboard', label: 'لوحة القيادة', icon: LayoutDashboard },
     { id: 'schedule', label: 'البرنامج والمواظبة', icon: CalendarDays },
-    { id: 'difficulties', label: 'مختبر الصعوبات', icon: Lightbulb },
+    { id: 'difficulties', label: 'مختبر التحديات', icon: Lightbulb },
     { id: 'resources', label: 'المصادر التفاعلية', icon: Gamepad2 },
     { id: 'orientation', label: 'التوجيه التربوي', icon: Compass },
     { id: 'reading', label: 'رحلة المطالعة', icon: BookOpen },
@@ -184,6 +185,9 @@ export default function App() {
             >
               <Menu size={24} />
             </button>
+            <div className="bg-white p-1 rounded-lg shrink-0 shadow-lg" title="قم بمسح الرمز لمشاركة التطبيق">
+              <QRCodeSVG value="https://selfleadership.vercel.app/" size={48} level="L" />
+            </div>
             <div className="flex flex-col">
               <h1 className="text-lg md:text-xl font-black text-white tracking-tight">RAED</h1>
               <p className="text-[10px] md:text-xs text-emerald-500/70 font-medium">Reading · Achieving · Evaluating · Developing</p>

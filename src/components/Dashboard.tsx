@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Target, Trophy, FilePlus, BookOpen, Lightbulb,
   CalendarDays, TrendingUp, TrendingDown, CheckCircle2,
-  AlertCircle, Clock, Star, BarChart2, Minus
+  AlertCircle, Clock, Star, BarChart2, Minus,
+  Brain, Flame, Medal, X, Send
 } from 'lucide-react';
 import { useApp, ClassSession } from '../context/AppContext';
 
@@ -32,6 +33,15 @@ export default function Dashboard() {
     schedule, readingSessions, difficulties,
     grades, subjects, profile, readingConfig
   } = useApp();
+
+  const [brainDump, setBrainDump] = useState('');
+  const [brainDumpItems, setBrainDumpItems] = useState<string[]>([]);
+
+  const handleBrainDump = () => {
+    if (!brainDump.trim()) return;
+    setBrainDumpItems(prev => [brainDump.trim(), ...prev]);
+    setBrainDump('');
+  };
 
   /* ── Attendance ──────────────────────────────────────────────────────── */
   const { attendanceRate, totalSessions, presentCount, absentCount, lateCount } = useMemo(() => {
@@ -107,7 +117,7 @@ export default function Dashboard() {
     difficulties.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 2).forEach(d => {
       items.push({
         icon: d.status === 'resolved' ? 'check' : 'lightbulb',
-        label: `${d.status === 'resolved' ? 'تم حل صعوبة في' : 'صعوبة في'} ${d.subject}`,
+        label: `${d.status === 'resolved' ? 'تم تجاوز تحدٍ في' : 'تحدٍ جديد في'} ${d.subject}`,
         sub: `${d.topic} · ${timeAgo(d.date)}`,
         date: d.date,
         color: d.status === 'resolved' ? 'emerald' : 'purple',
@@ -151,6 +161,33 @@ export default function Dashboard() {
     amber: 'bg-amber-500/20 text-amber-400',
   };
 
+  /* ─── Badges ─────────────────────────────────────────────────────────── */
+  const badges = useMemo(() => {
+    const earned: { label: string; icon: string; color: string }[] = [];
+    if (readingSessions.length >= 1) earned.push({ label: 'المبادر', icon: '📖', color: 'bg-blue-500/20 border-blue-500/30 text-blue-300' });
+    if (readingSessions.length >= 5) earned.push({ label: 'قارئ الأسبوع', icon: '🏆', color: 'bg-amber-500/20 border-amber-500/30 text-amber-300' });
+    if (difficulties.filter(d => d.status === 'resolved').length >= 1) earned.push({ label: 'متجاوز العقبات', icon: '⚡', color: 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300' });
+    if (difficulties.filter(d => d.status === 'resolved').length >= 3) earned.push({ label: 'قاهر التحديات', icon: '🎯', color: 'bg-purple-500/20 border-purple-500/30 text-purple-300' });
+    if (attendanceRate !== null && attendanceRate >= 90) earned.push({ label: 'متميز في المواظبة', icon: '🌟', color: 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300' });
+    if (overallAvg >= 15) earned.push({ label: 'المتفوق الأكاديمي', icon: '🥇', color: 'bg-amber-500/20 border-amber-500/30 text-amber-300' });
+    return earned;
+  }, [readingSessions, difficulties, attendanceRate, overallAvg]);
+
+  /* ─── Streak ─────────────────────────────────────────────────────────── */
+  const streak = useMemo(() => {
+    if (!readingSessions.length) return 0;
+    const today = new Date();
+    let count = 0;
+    for (let i = 0; i < 30; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      if (readingSessions.some(s => s.date === dateStr)) count++;
+      else break;
+    }
+    return count;
+  }, [readingSessions]);
+
   /* ─── render ────────────────────────────────────────────────────────── */
   return (
     <div className="space-y-6">
@@ -172,7 +209,53 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ── KPI Cards ── */}
+      {/* ── Streak + Brain Dump Row ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+        {/* Streak Counter */}
+        <div className="glass p-5 flex items-center gap-5 border border-orange-500/20" style={{ animation: 'fade-in-up 0.5s 0.05s both' }}>
+          <div className="relative">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-500/30 to-red-500/20 flex items-center justify-center" style={{ boxShadow: streak > 0 ? '0 0 20px rgba(249,115,22,0.3)' : 'none' }}>
+              <Flame size={32} className={streak > 0 ? 'text-orange-400' : 'text-slate-600'} />
+            </div>
+            {streak > 0 && <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs font-black rounded-full w-6 h-6 flex items-center justify-center">{streak}</span>}
+          </div>
+          <div>
+            <p className="text-slate-400 text-xs mb-1">سلسلة المطالعة اليومية</p>
+            <p className="text-white font-black text-2xl">{streak > 0 ? `${streak} يوم متواصل! 🔥` : 'ابدأ سلسلتك اليوم!'}</p>
+            <p className="text-slate-500 text-xs mt-1">{streak >= 7 ? '🏆 أسبوع كامل! استمر!' : streak > 0 ? 'لا تكسر السلسلة!' : 'سجّل جلسة مطالعة لتبدأ'}</p>
+          </div>
+        </div>
+
+        {/* Brain Dump */}
+        <div className="glass p-5 border border-purple-500/20" style={{ animation: 'fade-in-up 0.5s 0.1s both' }}>
+          <h3 className="text-sm font-bold text-purple-300 mb-3 flex items-center gap-2"><Brain size={16} /> ما الذي يشغل بالك اليوم؟</h3>
+          <div className="flex gap-2 mb-3">
+            <input
+              value={brainDump}
+              onChange={e => setBrainDump(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleBrainDump(); }}}
+              placeholder="اكتب ما يقلقك أو ما تريد تذكّره..."
+              className="flex-1 bg-slate-900/50 border border-white/10 text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-slate-500"
+            />
+            <button onClick={handleBrainDump} disabled={!brainDump.trim()} className="bg-purple-500 hover:bg-purple-600 text-white p-2 rounded-xl transition-colors disabled:opacity-40">
+              <Send size={16} />
+            </button>
+          </div>
+          {brainDumpItems.length > 0 && (
+            <div className="space-y-1.5 max-h-24 overflow-y-auto">
+              {brainDumpItems.map((item, i) => (
+                <div key={i} className="flex items-center gap-2 bg-purple-500/10 border border-purple-500/20 rounded-lg px-3 py-1.5">
+                  <span className="text-xs text-purple-200 flex-1">{item}</span>
+                  <button onClick={() => setBrainDumpItems(prev => prev.filter((_, idx) => idx !== i))} className="text-purple-400 hover:text-red-400 transition-colors"><X size={12} /></button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── KPI Cards ── */
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
 
         {/* Attendance */}
@@ -240,12 +323,12 @@ export default function Dashboard() {
             <div className="bg-purple-500/20 p-2 rounded-lg text-purple-400">
               <FilePlus size={18} />
             </div>
-            <p className="text-xs text-slate-400 font-medium">صعوبات مسجلة</p>
+            <p className="text-xs text-slate-400 font-medium">تحديات مسجلة</p>
           </div>
           <p className="text-3xl font-black text-white">{difficulties.length}</p>
           <div className="flex gap-3 text-xs">
             <span className="text-emerald-400 flex items-center gap-1">
-              <CheckCircle2 size={12} /> {resolvedCount} محلولة
+              <CheckCircle2 size={12} /> {resolvedCount} متجاوزة
             </span>
             <span className="text-amber-400 flex items-center gap-1">
               <AlertCircle size={12} /> {activeCount} نشطة
@@ -265,7 +348,7 @@ export default function Dashboard() {
           </h3>
           {recentActivities.length === 0 ? (
             <div className="text-center py-10 text-slate-500 text-sm">
-              لم يتم تسجيل أي نشاط بعد. ابدأ بتسجيل حضورك أو صعوباتك.
+              لم يتم تسجيل أي نشاط بعد. ابدأ بتسجيل حضورك أو تحدياتك.
             </div>
           ) : (
             <div className="space-y-3">
@@ -334,7 +417,7 @@ export default function Dashboard() {
             <div className="mt-5 flex items-start gap-2.5 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
               <AlertCircle size={15} className="text-red-400 mt-0.5 shrink-0" />
               <p className="text-xs text-red-300 leading-relaxed">
-                <strong>{worstSubject}</strong> تحتاج لاهتمام — آخر معدل {worstAvg.toFixed(1)}/20. سجّل صعوبة أو تواصل مع أستاذك.
+                <strong>{worstSubject}</strong> تمثل تحدياً كبيراً — آخر معدل {worstAvg.toFixed(1)}/20. الأخطاء فرص للتعلم، استشر أستاذك أو سجل التحدي.
               </p>
             </div>
           )}
@@ -350,6 +433,34 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      {/* ── Badges Section ── */}
+      {badges.length > 0 && (
+        <div className="glass p-5" style={{ animation: 'fade-in-up 0.5s 0.35s both' }}>
+          <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2"><Medal size={18} className="text-amber-400" /> شاراتي المكتسبة</h3>
+          <div className="flex flex-wrap gap-3">
+            {badges.map((badge, i) => (
+              <div key={i} className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-bold ${badge.color}`} style={{ animation: `fade-in-up 0.4s ${0.05 * i}s both` }}>
+                <span className="text-lg">{badge.icon}</span>
+                {badge.label}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Badges locked preview */}
+      {badges.length === 0 && (
+        <div className="glass p-5 border border-white/5" style={{ animation: 'fade-in-up 0.5s 0.35s both' }}>
+          <h3 className="text-sm font-bold text-slate-400 mb-3 flex items-center gap-2"><Medal size={18} className="text-slate-600" /> الشارات المنتظرة</h3>
+          <div className="flex flex-wrap gap-3">
+            {['المبادر 📖','قارئ الأسبوع 🏆','متجاوز العقبات ⚡','المتفوق الأكاديمي 🥇'].map((b, i) => (
+              <div key={i} className="px-4 py-2 rounded-full border border-white/10 text-sm text-slate-600 bg-white/5 grayscale">{b}</div>
+            ))}
+          </div>
+          <p className="text-xs text-slate-600 mt-3">سجّل نشاطاً لتكسب أولى شاراتك!</p>
+        </div>
+      )}
     </div>
   );
 }

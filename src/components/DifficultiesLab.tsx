@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Lightbulb, Send, Search, Users, Book, CheckCircle2, GraduationCap, Loader2, MessageCircle, Filter, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { Lightbulb, Send, Search, Users, Book, CheckCircle2, GraduationCap, Loader2, MessageCircle, Filter, ChevronDown, ChevronUp, X, Target } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { useApp, Peer, Teacher, Difficulty } from '../context/AppContext';
 
 export default function DifficultiesLab() {
@@ -77,6 +78,14 @@ export default function DifficultiesLab() {
     );
     setResolvingId(null);
     setCustomSolution('');
+    
+    // Confetti celebration for positive feedback
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#10b981', '#3b82f6', '#f59e0b']
+    });
   };
 
   const toggleExpand = (id: string) => {
@@ -97,11 +106,11 @@ export default function DifficultiesLab() {
       <div className="glass p-8 relative overflow-hidden backdrop-brightness-125 border-emerald-500/20">
         <div className="relative z-10 md:w-2/3">
           <h2 className="text-3xl font-bold mb-3 flex items-center gap-3 text-white">
-            <Lightbulb className="text-amber-400" size={32} />
-            مختبر الصعوبات والحلول
+            <Target className="text-amber-400" size={32} />
+            مختبر التحديات ومحطات التطوير
           </h2>
           <p className="text-slate-300 text-lg leading-relaxed mb-6">
-            محرك ذكي لاستقبال الصعوبات الدراسية وتوجيهها في مسارات الحل المثلى. يربطك بالحلول المقترحة وبالأشخاص المرجعيين بناءً على بيانات الأقسام الحقيقية.
+            محرك ذكي لاستقبال التحديات الدراسية وتوجيهها في مسارات الحل المثلى. يربطك بالمقاربات المقترحة وبالأشخاص المرجعيين لتعزيز عقلية النمو لديك.
           </p>
         </div>
         <div className="absolute top-0 right-0 opacity-10 transform translate-x-1/4 -translate-y-1/4 text-white">
@@ -119,7 +128,7 @@ export default function DifficultiesLab() {
         {/* Form */}
         <div className="lg:col-span-1">
           <div className="glass p-6 sticky top-6">
-            <h3 className="text-xl font-bold text-white mb-4 pb-3 border-b border-white/10">سجل صعوبة لمحرك الحلول</h3>
+            <h3 className="text-xl font-bold text-white mb-4 pb-3 border-b border-white/10">سجل تحدياً لمحرك الحلول</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">المادة المستعصية</label>
@@ -134,7 +143,7 @@ export default function DifficultiesLab() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">توصيف الصعوبة</label>
+                <label className="block text-sm font-medium text-slate-300 mb-1">توصيف التحدي</label>
                 <textarea 
                   value={newTopic}
                   onChange={(e) => setNewTopic(e.target.value)}
@@ -194,7 +203,7 @@ export default function DifficultiesLab() {
           {filteredDifficulties.length === 0 && (
             <div className="text-center py-12 text-slate-500 bg-white/5 border border-white/5 rounded-2xl animate-fade-in-up">
               <Filter size={48} className="mx-auto mb-4 opacity-20" />
-              <p>لا توجد صعوبات تطابق هذا الفلتر حالياً.</p>
+              <p>لا توجد تحديات تطابق هذا الفلتر حالياً.</p>
             </div>
           )}
 
@@ -332,7 +341,7 @@ export default function DifficultiesLab() {
                     <div className="pt-4 border-t border-white/10">
                       {resolvingId === diff.id ? (
                         <div className="bg-slate-900/80 p-4 rounded-xl border border-emerald-500/30 animate-fade-in-up">
-                          <label className="block text-sm font-medium text-emerald-400 mb-2">كيف تم تجاوز هذه الصعوبة؟ (اكتب خلاصة لتعود إليها لاحقاً)</label>
+                          <label className="block text-sm font-medium text-emerald-400 mb-2">كيف تم تجاوز هذا التحدي؟ (اكتب خلاصة لتعود إليها لاحقاً)</label>
                           <textarea 
                             value={customSolution}
                             onChange={(e) => setCustomSolution(e.target.value)}

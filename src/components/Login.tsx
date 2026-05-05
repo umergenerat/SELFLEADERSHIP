@@ -198,55 +198,7 @@ export default function Login({ onLogin, credentials }: LoginProps) {
             </div>
           </form>
 
-          {/* Social Divider */}
-          <div
-            className="mt-6"
-            style={{ animation: 'fade-in-up 0.6s 0.5s cubic-bezier(0.16,1,0.3,1) both' }}
-          >
-            <div className="relative flex items-center my-2">
-              <div className="flex-1 border-t border-white/8" />
-              <span className="px-4 text-xs text-slate-500 font-medium">أو الدخول بسرعة عبر</span>
-              <div className="flex-1 border-t border-white/8" />
-            </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <button
-                onClick={() => {
-                  setUsername(credentials.username);
-                  setPassword(credentials.password);
-                }}
-                className="flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl text-sm font-medium text-slate-200 transition-all duration-200 border border-white/8 hover:border-white/15 hover:bg-white/8 active:scale-95"
-                style={{ background: 'rgba(255,255,255,0.04)' }}
-                title="تعبئة بيانات جوجل "
-              >
-                <svg className="w-4.5 h-4.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                  <path d="M12 23c2.97 0 5.46-1 7.28-2.69l-3.57-2.77c-.99.69-2.26 1.1-3.71 1.1-2.87 0-5.3-1.94-6.16-4.53H2.13v2.84C3.99 20.53 7.71 23 12 23z" fill="#34A853" />
-                  <path d="M5.84 14.11c-.22-.69-.35-1.43-.35-2.11s.13-1.42.35-2.11V7.05H2.13C1.43 8.55 1 10.22 1 12s.43 3.45 1.13 4.95l3.71-2.84z" fill="#FBBC05" />
-                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.71 1 3.99 3.47 2.13 7.05l3.71 2.84c.86-2.59 3.29-4.51 6.16-4.51z" fill="#EA4335" />
-                </svg>
-                Google
-              </button>
-
-              <button
-                onClick={() => {
-                  setUsername(credentials.username);
-                  setPassword(credentials.password);
-                }}
-                className="flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl text-sm font-medium text-slate-200 transition-all duration-200 border border-white/8 hover:border-white/15 hover:bg-white/8 active:scale-95"
-                style={{ background: 'rgba(255,255,255,0.04)' }}
-                title="تعبئة بيانات مايكروسوفت"
-              >
-                <svg className="w-4.5 h-4.5" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="1" y="1" width="9" height="9" fill="#f25022" />
-                  <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
-                  <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
-                  <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
-                </svg>
-                Microsoft
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Footer */}

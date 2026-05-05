@@ -104,6 +104,7 @@ interface AppContextType {
   setReadingConfig: React.Dispatch<React.SetStateAction<ReadingConfig>>;
   setCredentials: React.Dispatch<React.SetStateAction<UserCredentials>>;
   toggleHealthAlert: () => void;
+  resetData: () => void;
 }
 
 const defaultSubjects = [
@@ -112,37 +113,22 @@ const defaultSubjects = [
 ];
 
 const defaultSchedule: Record<string, ClassSession[]> = {
-  'الإثنين': [
-    { id: '1', subject: 'الرياضيات', teacher: 'أ. العلوي', time: '08:00 - 10:00', status: 'present' },
-    { id: '2', subject: 'اللغة العربية', teacher: 'أ. بنسعيد', time: '10:00 - 12:00', status: 'present' },
-  ],
-  'الثلاثاء': [
-    { id: '3', subject: 'الفيزياء', teacher: 'أ. العلمي', time: '08:00 - 10:00', status: 'present' },
-    { id: '4', subject: 'التربية الإسلامية', teacher: 'أ. صابر', time: '10:00 - 12:00', status: 'present' },
-  ],
+  'الإثنين': [],
+  'الثلاثاء': [],
   'الأربعاء': [],
   'الخميس': [],
   'الجمعة': [],
   'السبت': []
 };
 
-const defaultPeers: Peer[] = [
-  { id: 'p1', name: 'ياسين المفتي', contactNumber: '212600000001', strengths: ['الرياضيات', 'الفيزياء'] },
-  { id: 'p2', name: 'مروان الناصري', contactNumber: '212600000002', strengths: ['اللغة الفرنسية', 'اللغة العربية'] },
-  { id: 'p3', name: 'سناء بنكيران', contactNumber: '212600000003', strengths: ['علوم الحياة والأرض', 'الرياضيات'] }
-];
+const defaultPeers: Peer[] = [];
 
-const defaultTeachers: Teacher[] = [
-  { id: 't1', name: 'أ. العلوي', contactNumber: '212600000010', subject: 'الرياضيات' },
-  { id: 't2', name: 'أ. بنسعيد', contactNumber: '212600000011', subject: 'اللغة العربية' },
-  { id: 't3', name: 'أ. العلمي', contactNumber: '212600000012', subject: 'الفيزياء' },
-  { id: 't4', name: 'أ. صابر', contactNumber: '212600000013', subject: 'التربية الإسلامية' }
-];
+const defaultTeachers: Teacher[] = [];
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const defaultProfile: UserProfile = {
-  name: "أحمد بناني",
+  name: "عمر ايت لوتو",
   level: "السنة الثالثة إعدادي - فوج 4",
   school: "ثانوية المختار السوسي الإعدادية",
   id: "J123456789",
@@ -164,42 +150,15 @@ const defaultReadingConfig: ReadingConfig = {
 };
 
 const defaultCredentials: UserCredentials = {
-  username: 'admin',
-  password: '1234'
+  username: 'J123456789',
+  password: 'password'
 };
 
-const defaultReadingSessions: ReadingSession[] = [
-  { id: 'rs1', title: 'تمارين الرياضيات (الجبر)', type: 'homework', date: new Date().toISOString().split('T')[0], duration: 45 },
-  { id: 'rs2', title: 'رواية الخيميائي', type: 'free', date: '2023-10-14', duration: 60 }
-];
+const defaultReadingSessions: ReadingSession[] = [];
 
-const defaultDifficulties: Difficulty[] = [
-  {
-    id: '1',
-    subject: 'الرياضيات',
-    topic: 'صعوبة في فهم النظمات ذات مجهولين',
-    status: 'active',
-    date: '2023-10-15',
-    aiSuggestions: ['مراجعة الدرس الثالث ص 24 من المقرر', 'مشاهدة فيديو تبسيطي على منصة تلميذ تيس'],
-    matchedPeers: [defaultPeers[0]],
-    matchedTeacher: defaultTeachers[0]
-  },
-  {
-    id: '2',
-    subject: 'اللغة الفرنسية',
-    topic: 'conjugaison conditionnel présent',
-    status: 'resolved',
-    solution: 'مراجعة شخصية عبر منصة التعليم عن بعد وحل التمارين التفاعلية',
-    date: '2023-10-10'
-  }
-];
+const defaultDifficulties: Difficulty[] = [];
 
-const defaultGrades: GradeEntry[] = [
-  { name: 'التقويم التشخيصي', 'الرياضيات': 12, 'اللغة العربية': 14, 'الفرنسية': 10 },
-  { name: 'الفرض 1', 'الرياضيات': 14, 'اللغة العربية': 15, 'الفرنسية': 13 },
-  { name: 'الفرض 2', 'الرياضيات': 13, 'اللغة العربية': 16, 'الفرنسية': 14 },
-  { name: 'الفرض 3', 'الرياضيات': 16, 'اللغة العربية': 17, 'الفرنسية': 16 }
-];
+const defaultGrades: GradeEntry[] = [];
 
 export const AppProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const loadData = () => {
@@ -236,10 +195,25 @@ export const AppProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     setProfile(prev => ({ ...prev, healthAlertActive: !prev.healthAlertActive }));
   };
 
+  const resetData = () => {
+    localStorage.removeItem('self_leadership_data');
+    setProfile(defaultProfile);
+    setPreferences(defaultPreferences);
+    setSubjects(defaultSubjects);
+    setSchedule(defaultSchedule);
+    setReadingSessions(defaultReadingSessions);
+    setDifficulties(defaultDifficulties);
+    setPeers(defaultPeers);
+    setTeachers(defaultTeachers);
+    setGrades(defaultGrades);
+    setReadingConfig(defaultReadingConfig);
+    setCredentials(defaultCredentials);
+  };
+
   return (
     <AppContext.Provider value={{
       profile, preferences, subjects, schedule, peers, teachers, readingSessions, difficulties, grades, readingConfig, credentials,
-      setProfile, setPreferences, setSubjects, setSchedule, setReadingSessions, setDifficulties, setPeers, setTeachers, setGrades, setReadingConfig, setCredentials, toggleHealthAlert
+      setProfile, setPreferences, setSubjects, setSchedule, setReadingSessions, setDifficulties, setPeers, setTeachers, setGrades, setReadingConfig, setCredentials, toggleHealthAlert, resetData
     }}>
       {children}
     </AppContext.Provider>

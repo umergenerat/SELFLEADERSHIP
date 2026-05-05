@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, User, Globe, Layout, Save, Book, Plus, X, Calendar as CalendarIcon, Users, GraduationCap, BookOpen, ShieldCheck, Eye, EyeOff, AlertCircle, CheckCircle2, Lock } from 'lucide-react';
+import { Settings as SettingsIcon, User, Globe, Layout, Save, Book, Plus, X, Calendar as CalendarIcon, Users, GraduationCap, BookOpen, ShieldCheck, Eye, EyeOff, AlertCircle, CheckCircle2, Lock, RefreshCw } from 'lucide-react';
 import { useApp, Peer, Teacher, ReadingConfig, UserCredentials } from '../context/AppContext';
 
 export default function Settings({ onClose }: { onClose?: () => void }) {
-  const { profile: globalProfile, preferences: globalPreferences, subjects: globalSubjects, peers: globalPeers, teachers: globalTeachers, readingConfig: globalReadingConfig, credentials: globalCredentials, setProfile, setPreferences, setSubjects, setPeers, setTeachers, setReadingConfig, setCredentials } = useApp();
+  const { profile: globalProfile, preferences: globalPreferences, subjects: globalSubjects, peers: globalPeers, teachers: globalTeachers, readingConfig: globalReadingConfig, credentials: globalCredentials, setProfile, setPreferences, setSubjects, setPeers, setTeachers, setReadingConfig, setCredentials, resetData } = useApp();
 
   const [profile, setProfileState] = useState(globalProfile);
   const [preferences, setPreferencesState] = useState(globalPreferences);
@@ -49,6 +49,7 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
 
   const [isSaved, setIsSaved] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   useEffect(() => {
     if (isSaved) {
@@ -125,9 +126,49 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
     setShowConfirm(true);
   };
 
+  const handleReset = () => {
+    resetData();
+    setShowResetConfirm(false);
+    setIsSaved(true);
+    if (onClose) {
+      setTimeout(() => {
+        onClose();
+      }, 1500);
+    }
+  };
+
   return (
     <div className="space-y-6 pb-20">
       
+      {/* Reset Confirmation Modal */}
+      {showResetConfirm && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="glass bg-slate-900 border border-red-500/20 p-6 max-w-sm w-full rounded-2xl shadow-2xl">
+            <h3 className="text-xl font-bold text-red-400 mb-4 flex items-center gap-2">
+              <AlertCircle size={24} />
+              تأكيد استعادة الافتراضيات
+            </h3>
+            <p className="text-slate-300 mb-6 text-sm leading-relaxed">
+              هل أنت متأكد من رغبتك في مسح كافة التعديلات واستعادة الإعدادات الافتراضية؟ سيتم حذف كافة البيانات المسجلة.
+            </p>
+            <div className="flex gap-4">
+              <button 
+                onClick={() => setShowResetConfirm(false)}
+                className="flex-1 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors font-medium border border-white/10"
+              >
+                إلغاء
+              </button>
+              <button 
+                onClick={handleReset}
+                className="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-colors font-bold shadow-lg shadow-red-500/20"
+              >
+                تأكيد الاستعادة
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Confirmation Modal */}
       {showConfirm && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
@@ -905,7 +946,14 @@ export default function Settings({ onClose }: { onClose?: () => void }) {
           </div>
         </div>
 
-        <div className="mt-10 flex justify-end pt-6 border-t border-white/10">
+        <div className="mt-10 flex flex-col md:flex-row justify-between gap-4 pt-6 border-t border-white/10">
+           <button 
+             onClick={() => setShowResetConfirm(true)}
+             className="bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-colors w-full md:w-auto"
+           >
+             <RefreshCw size={20} />
+             استعادة الإعدادات الافتراضية
+           </button>
            <button 
              onClick={handleSave}
              className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-8 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm badge-glow w-full md:w-auto"
