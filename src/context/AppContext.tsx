@@ -150,8 +150,8 @@ const defaultReadingConfig: ReadingConfig = {
 };
 
 const defaultCredentials: UserCredentials = {
-  username: 'J123456789',
-  password: 'password'
+  username: 'admin',
+  password: 'J123456789'
 };
 
 const defaultReadingSessions: ReadingSession[] = [];

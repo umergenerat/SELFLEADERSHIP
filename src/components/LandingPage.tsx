@@ -16,44 +16,23 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
         </button>
       </div>
 
-      <div className="flex-1 w-full max-w-md flex flex-col items-center justify-center gap-10">
-        {/* QR Section */}
-        <div className="relative group">
-          {/* Outer glow */}
-          <div className="absolute -inset-10 bg-emerald-500/10 rounded-full blur-[100px] group-hover:bg-emerald-500/20 transition-all duration-700" />
-          
-          {/* QR Container */}
-          <div className="relative bg-white p-4 rounded-[1.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-            <QRCodeSVG 
-              value="https://selfleadership.vercel.app/"
-              size={280}
-              level="H"
-              includeMargin={false}
-              imageSettings={{
-                src: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg",
-                x: undefined,
-                y: undefined,
-                height: 60,
-                width: 60,
-                excavate: true,
-              }}
-            />
+      <div className="flex-1 w-full max-w-md flex flex-col items-center justify-center gap-12">
+        {/* Branding Section */}
+        <div className="text-center space-y-4">
+          <div className="w-24 h-24 bg-[#00a884] rounded-3xl flex items-center justify-center mx-auto shadow-2xl shadow-[#00a884]/20 animate-bounce-slow">
+            <MessageCircle size={48} className="text-white" />
           </div>
+          <h1 className="text-5xl font-black text-white tracking-tighter">RAED</h1>
+          <p className="text-emerald-500 font-bold tracking-[0.4em] text-sm uppercase">Self-Leadership</p>
         </div>
 
         {/* Text Section */}
-        <div className="w-full space-y-8 mt-4">
-          <div className="space-y-4 text-center sm:text-left">
-            <h1 className="text-4xl font-normal text-slate-100">Connectez-vous sur WhatsApp</h1>
-            
-            <div className="flex items-start gap-4 py-2">
-              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-slate-900 font-bold shrink-0 mt-1">
-                1
-              </div>
-              <p className="text-xl text-slate-300 leading-relaxed">
-                Scannez le code QR avec la caméra de votre téléphone
-              </p>
-            </div>
+        <div className="w-full space-y-8">
+          <div className="space-y-4 text-center">
+            <h1 className="text-4xl font-bold text-slate-100">مرحباً بك في منصة رائد</h1>
+            <p className="text-xl text-slate-300 leading-relaxed max-w-sm mx-auto">
+              بوابة التطوير الذاتي والمطالعة الموجهة للمتعلم
+            </p>
           </div>
 
           {/* Action Buttons */}
