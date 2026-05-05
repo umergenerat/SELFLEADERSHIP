@@ -22,7 +22,12 @@ export default function Login({ onLogin, credentials }: LoginProps) {
     setIsLoading(true);
     await new Promise(r => setTimeout(r, 700));
     setIsLoading(false);
-    if (username === credentials.username && password === credentials.password) {
+    
+    // Trim inputs to avoid whitespace issues
+    const cleanUsername = username.trim();
+    const cleanPassword = password.trim();
+
+    if (cleanUsername === credentials.username && cleanPassword === credentials.password) {
       onLogin();
     } else {
       setError('اسم المستخدم أو كلمة المرور غير صحيحة. يرجى المحاولة مجدداً.');
