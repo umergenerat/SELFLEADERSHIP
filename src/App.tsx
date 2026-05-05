@@ -27,12 +27,14 @@ import Guidance from './components/Guidance';
 import UserGuide from './components/UserGuide';
 import Settings from './components/Settings';
 import Login from './components/Login';
+import LandingPage from './components/LandingPage';
 import { useApp } from './context/AppContext';
 
 type View = 'dashboard' | 'schedule' | 'difficulties' | 'reading' | 'progress' | 'resources' | 'orientation' | 'guide' | 'settings';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { profile: student, toggleHealthAlert, credentials, preferences } = useApp();
@@ -47,6 +49,10 @@ export default function App() {
     document.documentElement.dir = preferences.language === 'ar' ? 'rtl' : 'ltr';
   }, [preferences.theme, preferences.language]);
 
+
+  if (showLanding) {
+    return <LandingPage onEnter={() => setShowLanding(false)} />;
+  }
 
   if (!isAuthenticated) {
     return <Login credentials={credentials} onLogin={() => setIsAuthenticated(true)} />;
@@ -185,9 +191,13 @@ export default function App() {
             >
               <Menu size={24} />
             </button>
-            <div className="bg-white p-1 rounded-lg shrink-0 shadow-lg" title="قم بمسح الرمز لمشاركة التطبيق">
+            <button 
+              onClick={() => setShowLanding(true)}
+              className="bg-white p-1 rounded-lg shrink-0 shadow-lg hover:scale-105 transition-transform" 
+              title="انقر لعرض صفحة المشاركة والتحميل"
+            >
               <QRCodeSVG value="https://selfleadership.vercel.app/" size={48} level="L" />
-            </div>
+            </button>
             <div className="flex flex-col">
               <h1 className="text-lg md:text-xl font-black text-white tracking-tight">RAED</h1>
               <p className="text-[10px] md:text-xs text-emerald-500/70 font-medium">Reading · Achieving · Evaluating · Developing</p>
