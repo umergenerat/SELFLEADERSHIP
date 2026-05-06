@@ -227,14 +227,71 @@ body {
   .glass, .alert-glass, .stat-card { background: none; border: 1px solid #ccc; color: black; }
 }
 
-/* ========== Light Mode ========== */
+/* ========== Light Mode Override ========== */
 html.theme-light {
-  filter: invert(1) hue-rotate(180deg);
-  background-color: white;
+  background: 
+    radial-gradient(ellipse 80% 50% at 90% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 10% 100%, rgba(16, 185, 129, 0.05) 0%, transparent 60%),
+    linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%);
+  color: #1e293b;
 }
 
-html.theme-light img,
-html.theme-light video,
-html.theme-light .avatar-no-invert {
-  filter: invert(1) hue-rotate(180deg);
+html.theme-light body {
+  background: transparent;
+  color: #1e293b;
+}
+
+html.theme-light .glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px) saturate(1.8);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: #1e293b;
+}
+
+html.theme-light .glass-strong {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: #1e293b;
+}
+
+html.theme-light .stat-card {
+  background: white;
+  border: 1px solid rgba(16, 185, 129, 0.15);
+  color: #1e293b;
+}
+
+html.theme-light h1, 
+html.theme-light h2, 
+html.theme-light h3, 
+html.theme-light .text-white {
+  color: #0f172a !important;
+}
+
+html.theme-light .text-slate-300,
+html.theme-light .text-slate-400 {
+  color: #475569 !important;
+}
+
+html.theme-light .input-premium {
+  background: white;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: #1e293b;
+}
+
+html.theme-light .input-premium:focus {
+  background: white;
+  border-color: #10b981;
+}
+
+html.theme-light .nav-item-active {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+html.theme-light .alert-glass {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+html.theme-light .orb {
+  opacity: 0.4;
 }

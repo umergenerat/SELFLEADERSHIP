@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { QRCodeSVG } from 'qrcode.react';
 import { 
   LayoutDashboard, 
   CalendarDays, 
@@ -37,7 +36,7 @@ export default function App() {
   const [showLanding, setShowLanding] = useState(true);
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { profile: student, toggleHealthAlert, credentials, preferences } = useApp();
+  const { profile: student, toggleHealthAlert, credentials, preferences, t } = useApp();
   const healthAlert = student.healthAlertActive;
 
   React.useEffect(() => {
@@ -71,15 +70,15 @@ export default function App() {
   };
 
   const navItems = [
-    { id: 'dashboard', label: 'لوحة القيادة', icon: LayoutDashboard },
-    { id: 'schedule', label: 'البرنامج والمواظبة', icon: CalendarDays },
-    { id: 'difficulties', label: 'مختبر التحديات', icon: Lightbulb },
-    { id: 'resources', label: 'المصادر التفاعلية', icon: Gamepad2 },
-    { id: 'orientation', label: 'التوجيه التربوي', icon: Compass },
-    { id: 'reading', label: 'رحلة المطالعة', icon: BookOpen },
-    { id: 'progress', label: 'منحنى التطور', icon: TrendingUp },
-    { id: 'guide', label: 'دليل الاستخدام', icon: Info },
-    { id: 'settings', label: 'الإعدادات', icon: SettingsIcon },
+    { id: 'dashboard', label: t('dashboard'), icon: LayoutDashboard },
+    { id: 'schedule', label: t('schedule'), icon: CalendarDays },
+    { id: 'difficulties', label: t('difficulties'), icon: Lightbulb },
+    { id: 'resources', label: t('resources'), icon: Gamepad2 },
+    { id: 'orientation', label: t('orientation'), icon: Compass },
+    { id: 'reading', label: t('reading'), icon: BookOpen },
+    { id: 'progress', label: t('progress'), icon: TrendingUp },
+    { id: 'guide', label: t('guide'), icon: Info },
+    { id: 'settings', label: t('settings'), icon: SettingsIcon },
   ];
 
   const handleExportPDF = () => {
@@ -120,7 +119,7 @@ export default function App() {
           >
             <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/15 to-transparent" />
-              <span className="text-3xl font-black text-emerald-400 relative z-10">م</span>
+              <span className="text-3xl font-black text-emerald-400 relative z-10">{student.name.charAt(0)}</span>
             </div>
             <div className="absolute -bottom-0.5 -right-0.5 bg-emerald-500 rounded-full p-1 border-2 border-slate-900">
               <Sparkles size={10} className="text-white" />
@@ -165,17 +164,17 @@ export default function App() {
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-300 rounded-xl transition-colors text-sm"
               >
                 <FileDown size={16} />
-                <span>تصدير الدفتر (PDF)</span>
+                <span>{t('export_pdf')}</span>
               </button>
               <button 
                 onClick={() => setIsAuthenticated(false)}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded-xl transition-colors text-sm"
               >
                 <LogOut size={16} />
-                <span>تسجيل الخروج</span>
+                <span>{t('logout')}</span>
               </button>
              <div className="text-[10px] text-slate-500 uppercase tracking-widest text-center">{student.school}</div>
-             <div className="text-[10px] text-slate-500 tracking-widest text-center mt-2">تطوير: عمر أيت لوتو Aomar Ait Loutou</div>
+             <div className="text-[10px] text-slate-500 tracking-widest text-center mt-2">{t('developed_by')} Aomar Ait Loutou</div>
           </div>
         </nav>
       </aside>
@@ -191,15 +190,15 @@ export default function App() {
             >
               <Menu size={24} />
             </button>
-            <button 
+            <div 
+              className="bg-[#00a884] p-2.5 rounded-xl shrink-0 shadow-lg shadow-[#00a884]/20 flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
               onClick={() => setShowLanding(true)}
-              className="bg-white p-1 rounded-lg shrink-0 shadow-lg hover:scale-105 transition-transform" 
-              title="انقر لعرض صفحة المشاركة والتحميل"
+              title="العودة للصفحة الرئيسية"
             >
-              <QRCodeSVG value="https://selfleadership.vercel.app/" size={48} level="L" />
-            </button>
+              <Sparkles size={24} className="text-white" />
+            </div>
             <div className="flex flex-col">
-              <h1 className="text-lg md:text-xl font-black text-white tracking-tight">RAED</h1>
+              <h1 className="text-lg md:text-xl font-black text-white tracking-tight">{t('app_title')}</h1>
               <p className="text-[10px] md:text-xs text-emerald-500/70 font-medium">Reading · Achieving · Evaluating · Developing</p>
             </div>
           </div>
@@ -217,11 +216,11 @@ export default function App() {
                  <BellRing size={14} className={healthAlert ? 'text-red-400' : 'text-slate-300'} />
                  {healthAlert ? (
                    <>
-                     <span className="text-red-400 font-bold hidden sm:block">تنبيه صحي خاص:</span>
-                     <span className="text-slate-300 hidden md:inline">حساسية معلنة نشطة</span>
+                     <span className="text-red-400 font-bold hidden sm:block">{t('health_alert_active')}</span>
+                     <span className="text-slate-300 hidden md:inline">{t('health_alert_msg')}</span>
                    </>
                  ) : (
-                   <span className="text-slate-300 hidden sm:inline">تنبيه صحي/طارئ</span>
+                   <span className="text-slate-300 hidden sm:inline">{t('health_alert')}</span>
                  )}
               </div>
             </button>

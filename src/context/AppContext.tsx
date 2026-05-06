@@ -105,6 +105,7 @@ interface AppContextType {
   setCredentials: React.Dispatch<React.SetStateAction<UserCredentials>>;
   toggleHealthAlert: () => void;
   resetData: () => void;
+  t: (key: string) => string;
 }
 
 const defaultSubjects = [
@@ -210,10 +211,91 @@ export const AppProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     setCredentials(defaultCredentials);
   };
 
+  const t = (key: string): string => {
+    const translations: Record<string, any> = {
+      ar: {
+        dashboard: 'لوحة القيادة',
+        schedule: 'البرنامج والمواظبة',
+        difficulties: 'مختبر التحديات',
+        resources: 'المصادر التفاعلية',
+        orientation: 'التوجيه التربوي',
+        reading: 'رحلة المطالعة',
+        progress: 'منحنى التطور',
+        guide: 'دليل الاستخدام',
+        settings: 'الإعدادات',
+        logout: 'تسجيل الخروج',
+        export_pdf: 'تصدير الدفتر (PDF)',
+        welcome: 'مرحباً بك في مسارك الذكي،',
+        health_alert: 'تنبيه صحي/طارئ',
+        health_alert_active: 'تنبيه صحي خاص:',
+        health_alert_msg: 'حساسية معلنة نشطة',
+        cancel_alert: 'إلغاء التنبيه',
+        school: 'المؤسسة التعليمية',
+        developed_by: 'تطوير: عمر أيت لوتو',
+        enter_app: 'دخول التطبيق',
+        install: 'تثبيت',
+        share: 'مشاركة',
+        app_title: 'رائد',
+        app_subtitle: 'بوابة التطوير الذاتي والمطالعة الموجهة للمتعلم'
+      },
+      fr: {
+        dashboard: 'Tableau de bord',
+        schedule: 'Emploi du temps',
+        difficulties: 'Labo des défis',
+        resources: 'Ressources interactives',
+        orientation: 'Orientation',
+        reading: 'Voyage de lecture',
+        progress: 'Courbe de progrès',
+        guide: 'Guide utilisateur',
+        settings: 'Paramètres',
+        logout: 'Déconnexion',
+        export_pdf: 'Exporter PDF',
+        welcome: 'Bienvenue dans votre parcours intelligent,',
+        health_alert: 'Alerte Santé/Urgence',
+        health_alert_active: 'Alerte Santé Spéciale:',
+        health_alert_msg: 'Allergie déclarée active',
+        cancel_alert: 'Annuler l\'alerte',
+        school: 'Établissement',
+        developed_by: 'Développé par: Aomar Ait Loutou',
+        enter_app: 'Entrer dans l\'application',
+        install: 'Installer',
+        share: 'Partager',
+        app_title: 'RAED',
+        app_subtitle: 'Portail de développement personnel et lecture dirigée'
+      },
+      en: {
+        dashboard: 'Dashboard',
+        schedule: 'Schedule',
+        difficulties: 'Challenges Lab',
+        resources: 'Interactive Resources',
+        orientation: 'Orientation',
+        reading: 'Reading Journey',
+        progress: 'Progress Curve',
+        guide: 'User Guide',
+        settings: 'Settings',
+        logout: 'Logout',
+        export_pdf: 'Export PDF',
+        welcome: 'Welcome to your smart journey,',
+        health_alert: 'Health/Emergency Alert',
+        health_alert_active: 'Special Health Alert:',
+        health_alert_msg: 'Active declared allergy',
+        cancel_alert: 'Cancel Alert',
+        school: 'School',
+        developed_by: 'Developed by: Aomar Ait Loutou',
+        enter_app: 'Enter App',
+        install: 'Install',
+        share: 'Share',
+        app_title: 'RAED',
+        app_subtitle: 'Self-Leadership Portal and Guided Reading'
+      }
+    };
+    return translations[preferences.language]?.[key] || translations['ar']?.[key] || key;
+  };
+
   return (
     <AppContext.Provider value={{
       profile, preferences, subjects, schedule, peers, teachers, readingSessions, difficulties, grades, readingConfig, credentials,
-      setProfile, setPreferences, setSubjects, setSchedule, setReadingSessions, setDifficulties, setPeers, setTeachers, setGrades, setReadingConfig, setCredentials, toggleHealthAlert, resetData
+      setProfile, setPreferences, setSubjects, setSchedule, setReadingSessions, setDifficulties, setPeers, setTeachers, setGrades, setReadingConfig, setCredentials, toggleHealthAlert, resetData, t
     }}>
       {children}
     </AppContext.Provider>
