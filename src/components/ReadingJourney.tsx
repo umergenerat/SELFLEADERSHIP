@@ -182,9 +182,17 @@ export default function ReadingJourney() {
           {currentBadge.icon}
         </div>
         <h2 className="text-3xl font-bold text-white mb-2 z-10">{currentBadge.title}</h2>
-        <p className="text-slate-300 max-w-md z-10">
-          حصيلة مثمرة! لقد أتممت {sessionsCount} حصة مطالعة من أصل {maxSessions} حصة مبرمجة في الموسم.
-        </p>
+        <div className="text-slate-300 max-w-md z-10 leading-relaxed">
+          {sessionsCount === 0 ? (
+            <p>
+              ابدأ رحلة المطالعة اليوم! هدفك هو إتمام <span className="text-emerald-400 font-bold">{maxSessions}</span> حصة مبرمجة في الموسم لتحقيق التميز.
+            </p>
+          ) : (
+            <p>
+              حصيلة مثمرة! لقد أتممت <span className="text-emerald-400 font-black text-lg">{sessionsCount}</span> حصة مطالعة من أصل <span className="text-white font-bold">{maxSessions}</span> حصة مبرمجة في الموسم.
+            </p>
+          )}
+        </div>
         {/* Academic config summary badges */}
         <div className="flex flex-wrap justify-center gap-2 mt-3 z-10">
           <span className="text-[11px] bg-slate-700/60 text-slate-300 border border-white/10 px-3 py-1 rounded-full">
