@@ -34,14 +34,20 @@ import { useApp } from './context/AppContext';
 type View = 'dashboard' | 'schedule' | 'difficulties' | 'reading' | 'progress' | 'resources' | 'orientation' | 'guide' | 'settings';
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showLanding, setShowLanding] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => sessionStorage.getItem('raed_auth') === 'true');
+  const [showLanding, setShowLanding] = useState(() => sessionStorage.getItem('raed_landing') !== 'false');
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [viewHistory, setViewHistory] = useState<View[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const { profile: student, toggleHealthAlert, credentials, preferences, t } = useApp();
   const healthAlert = student.healthAlertActive;
+
+  // Persist auth and landing state
+  React.useEffect(() => {
+    sessionStorage.setItem('raed_auth', isAuthenticated.toString());
+    sessionStorage.setItem('raed_landing', showLanding.toString());
+  }, [isAuthenticated, showLanding]);
 
   // Handle browser close/refresh confirmation
   React.useEffect(() => {
@@ -70,30 +76,6 @@ export default function App() {
   if (!isAuthenticated) {
     return <Login credentials={credentials} onLogin={() => setIsAuthenticated(true)} />;
   }
-
-  const views: Record<View, React.ReactNode> = {
-    dashboard: <Dashboard />,
-    schedule: <Schedule />,
-    difficulties: <DifficultiesLab />,
-    reading: <ReadingJourney />,
-    progress: <ProgressCurve />,
-    resources: <InteractiveResources />,
-    orientation: <Guidance />,
-    guide: <UserGuide />,
-    settings: <Settings onClose={goBack} />
-  };
-
-  const navItems = [
-    { id: 'dashboard', label: t('dashboard'), icon: LayoutDashboard },
-    { id: 'schedule', label: t('schedule'), icon: CalendarDays },
-    { id: 'difficulties', label: t('difficulties'), icon: Lightbulb },
-    { id: 'resources', label: t('resources'), icon: Gamepad2 },
-    { id: 'orientation', label: t('orientation'), icon: Compass },
-    { id: 'reading', label: t('reading'), icon: BookOpen },
-    { id: 'progress', label: t('progress'), icon: TrendingUp },
-    { id: 'guide', label: t('guide'), icon: Info },
-    { id: 'settings', label: t('settings'), icon: SettingsIcon },
-  ];
 
   const navigateTo = (view: View) => {
     if (view !== currentView) {
@@ -126,6 +108,30 @@ export default function App() {
   };
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  const views: Record<View, React.ReactNode> = {
+    dashboard: <Dashboard />,
+    schedule: <Schedule />,
+    difficulties: <DifficultiesLab />,
+    reading: <ReadingJourney />,
+    progress: <ProgressCurve />,
+    resources: <InteractiveResources />,
+    orientation: <Guidance />,
+    guide: <UserGuide />,
+    settings: <Settings onClose={goBack} />
+  };
+
+  const navItems = [
+    { id: 'dashboard', label: t('dashboard'), icon: LayoutDashboard },
+    { id: 'schedule', label: t('schedule'), icon: CalendarDays },
+    { id: 'difficulties', label: t('difficulties'), icon: Lightbulb },
+    { id: 'resources', label: t('resources'), icon: Gamepad2 },
+    { id: 'orientation', label: t('orientation'), icon: Compass },
+    { id: 'reading', label: t('reading'), icon: BookOpen },
+    { id: 'progress', label: t('progress'), icon: TrendingUp },
+    { id: 'guide', label: t('guide'), icon: Info },
+    { id: 'settings', label: t('settings'), icon: SettingsIcon },
+  ];
 
   return (
     <div className="flex h-screen w-full p-2 md:p-4 lg:p-6 gap-2 md:gap-4 lg:gap-6 text-white font-sans overflow-hidden" dir={preferences.language === 'ar' ? 'rtl' : 'ltr'}>
