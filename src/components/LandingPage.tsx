@@ -8,6 +8,26 @@ interface LandingPageProps {
 
 export default function LandingPage({ onEnter }: LandingPageProps) {
   const { t } = useApp();
+  const [isStandalone, setIsStandalone] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkStandalone = () => {
+      const isStandaloneMode = 
+        window.matchMedia('(display-mode: standalone)').matches || 
+        (window.navigator as any).standalone === true;
+      setIsStandalone(isStandaloneMode);
+    };
+
+    checkStandalone();
+    
+    const handleAppInstalled = () => {
+      setIsStandalone(true);
+    };
+
+    window.addEventListener('appinstalled', handleAppInstalled);
+    return () => window.removeEventListener('appinstalled', handleAppInstalled);
+  }, []);
+
   const handleShare = async () => {
     const shareData = {
       title: t('app_title'),
@@ -70,16 +90,18 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
             </button>
 
             <div className="flex gap-3">
-              <button 
-                onClick={handleInstall}
-                className="flex-1 py-4 bg-white/5 hover:bg-white/10 text-slate-300 rounded-2xl transition-all flex items-center justify-center gap-2 border border-white/10 group"
-              >
-                <Download size={20} className="text-[#00a884] group-hover:scale-110 transition-transform" />
-                <span className="font-medium">{t('install')}</span>
-              </button>
+              {!isStandalone && (
+                <button 
+                  onClick={handleInstall}
+                  className="flex-1 py-4 bg-white/5 hover:bg-white/10 text-slate-300 rounded-2xl transition-all flex items-center justify-center gap-2 border border-white/10 group"
+                >
+                  <Download size={20} className="text-[#00a884] group-hover:scale-110 transition-transform" />
+                  <span className="font-medium">{t('install')}</span>
+                </button>
+              )}
               <button 
                 onClick={handleShare}
-                className="flex-1 py-4 bg-white/5 hover:bg-white/10 text-slate-300 rounded-2xl transition-all flex items-center justify-center gap-2 border border-white/10 group"
+                className={`${isStandalone ? 'w-full' : 'flex-1'} py-4 bg-white/5 hover:bg-white/10 text-slate-300 rounded-2xl transition-all flex items-center justify-center gap-2 border border-white/10 group`}
               >
                 <Share2 size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
                 <span className="font-medium">{t('share')}</span>
